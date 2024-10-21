@@ -17,3 +17,7 @@ Route::post('item-buy',[SupplierController::class,'itemBuy'])->name('itemBuy');
 Route::post('get-item-purchase-details',[SupplierController::class,'getItemPurchaseDetails'])->name('getItemPurchaseDetails');
 
 Route::get('/',[SupplierController::class,'listPurchaseOrder'])->name('listPurchaseOrder');
+
+Route::get('export-order',[SupplierController::class,'exportOrder'])->name('exportOrder');
+
+Route::get('print-order',[SupplierController::class,'printOrder'])->name('printOrder');

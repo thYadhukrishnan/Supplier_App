@@ -9,12 +9,16 @@ use App\Models\Supplier;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Exports\orderExport;
+use Maatwebsite\Excel\Facades\Excel;
+use Barryvdh\DomPDF\Facade\Pdf;
+
 
 
 class SupplierController extends Controller
 {
     public function listSupplier(){
-        $supplierData = Supplier::get();
+        $supplierData = Supplier::paginate(10);
         return view('listSupplier',compact('supplierData'));
     }
 
@@ -41,7 +45,7 @@ class SupplierController extends Controller
     }
 
     public function listItem(){
-        $itemData = Item::with('supplier')->get();
+        $itemData = Item::with('supplier')->paginate(10);
         foreach($itemData as $item){
             if (!empty($item->item_images)) {
                 $item->item_images = explode(',', $item->item_images);
@@ -65,10 +69,8 @@ class SupplierController extends Controller
         $supplierID = $request->input('supplierID');
         $discount   = $request->input('discount');
         $filenames = '';
-// return $request;
        if( $request->hasFile('itemImages') ){
             foreach($request->file('itemImages') as $image){
-                // return $image->getClientOriginalExtension();
                 if(in_array($image->getClientOriginalExtension(), ['jpeg', 'png', 'jpg', 'gif'])){
                     $filename = time() . '_' . $image->getClientOriginalName();
                     $image->move(public_path('uploads'), $filename);
@@ -145,8 +147,52 @@ class SupplierController extends Controller
                             ->join('items','items.item_no','=','po.item_id')
                             ->join('suppliers','suppliers.supplier_no','=','po.supplier_id')
                             ->orderBy('po.order_date','desc')
-                            ->get();
+                            ->paginate(10);
         
         return view('listPurchaseOrder',compact('purchaseOrderdata'));
+    }
+
+    public function exportOrder(){
+
+
+         $purchaseOrderdata = DB::table('purchase_orders as po')
+            ->join('items','items.item_no','=','po.item_id')
+            ->join('suppliers','suppliers.supplier_no','=','po.supplier_id')
+            ->select('items.item_name','items.stock_unit','items.unit_price','po.item_total_no',
+            'po.item_total','po.discount','po.net_amount')
+            ->orderBy('po.order_date','desc')
+            ->get();
+        
+            $header = ['Item Name', 'Stock Unit', 'Unit Price', 'Order Qty', 'Item Amount', 'Discount', 'Net Amount'];
+
+            $values = $purchaseOrderdata->map(function ($item) {
+                return [
+                    $item->item_name,
+                    $item->stock_unit,
+                    $item->unit_price,
+                    $item->item_total_no,
+                    $item->item_total,
+                    $item->discount,
+                    $item->net_amount,
+                ];
+            })->toArray();
+            $exportData = array_merge([$header], $values);
+        return Excel::download(new orderExport($exportData), 'purchase_orders.xlsx');
+
+    }
+
+    public function printOrder(){
+        $purchaseOrderdata = DB::table('purchase_orders as po')
+            ->join('items','items.item_no','=','po.item_id')
+            ->join('suppliers','suppliers.supplier_no','=','po.supplier_id')
+            ->orderBy('po.order_date','desc')
+            ->get()
+            ->toArray();
+
+        $pdf = Pdf::loadView('listPurchaseOrderPdf',
+            [
+                'purchaseOrderdata' => $purchaseOrderdata,
+            ]);
+        return $pdf->download('purchase_order.pdf');
     }
 }

@@ -23,6 +23,7 @@
     <div class="row px-0 pt-5">
         <table class="table table-striped">
             <thead>
+                <th>#</th>
                 <th>Item Name</th>
                 <th>Inventory Location</th>
                 <th>Brand</th>
@@ -38,6 +39,7 @@
                 @if(!$itemData->isEmpty())
                     @foreach ($itemData as $item)
                     <tr>
+                      <td>{{$itemData->firstItem() + $loop->index}}</td>
                       <td>{{$item->item_name}}</td>
                       <td>{{$item->inventory_location}}</td>
                       <td>{{$item->brand}}</td>
@@ -69,6 +71,14 @@
                 @endif
             </tbody>
         </table>
+        <div class="d-flex justify-content-between">
+          <div>
+              Showing {{ $itemData->firstItem() }} to {{ $itemData->lastItem() }} of {{ $itemData->total() }} results
+          </div>
+          <div>
+              {{ $itemData->links() }} <!-- Bootstrap 4 pagination -->
+          </div>
+      </div>
     </div>
 </div>
 

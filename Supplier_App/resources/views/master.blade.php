@@ -15,6 +15,11 @@
         .w-a{
             width: auto;
         }
+
+.hidden{
+  display: none !important;
+}
+
     </style>
 
 </head>

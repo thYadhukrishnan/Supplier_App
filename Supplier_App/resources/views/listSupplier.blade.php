@@ -38,6 +38,7 @@
             <tbody>
                 @if(!$supplierData->isEmpty())
                     @foreach ($supplierData as $data)
+                        <td>{{$supplierData->firstItem() + $loop->index}}</td>
                         <td>{{$data->supplier_name}}</td>
                         <td>{{$data->address}}</td>
                         <td>{{$data->tax_no}}</td>
@@ -51,6 +52,15 @@
                 @endif
             </tbody>
         </table>
+
+        <div class="d-flex justify-content-between">
+          <div>
+              Showing {{ $supplierData->firstItem() }} to {{ $supplierData->lastItem() }} of {{ $supplierData->total() }} results
+          </div>
+          <div>
+              {{ $supplierData->links() }} <!-- Bootstrap 4 pagination -->
+          </div>
+      </div>
     </div>
 </div>
 
