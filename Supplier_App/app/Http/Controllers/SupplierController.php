@@ -110,7 +110,6 @@ class SupplierController extends Controller
     }
 
     public function itemBuy(Request $request){
-        // return $request;
 
         $itemID = $request->input('itemID');
         $itemSupplierID = $request->input('itemSupplierID');
@@ -127,6 +126,7 @@ class SupplierController extends Controller
         $purchaseOrder->item_total = $itemTotal;
         $purchaseOrder->discount = $itemDiscount;
         $purchaseOrder->net_amount = $netAmount;
+        $purchaseOrder->item_total_no = $numberOfItem;
         $purchaseOrder->save();
 
         $itemData = Item::where('item_no',$itemID)->first();
@@ -141,12 +141,12 @@ class SupplierController extends Controller
 
     public function listPurchaseOrder(){
 
-        return $purchaseOrderdata = DB::table('purchase_orders as po')
+        $purchaseOrderdata = DB::table('purchase_orders as po')
                             ->join('items','items.item_no','=','po.item_id')
                             ->join('suppliers','suppliers.supplier_no','=','po.supplier_id')
                             ->orderBy('po.order_date','desc')
                             ->get();
         
-        return view('listPurchaseOrder');
+        return view('listPurchaseOrder',compact('purchaseOrderdata'));
     }
 }
