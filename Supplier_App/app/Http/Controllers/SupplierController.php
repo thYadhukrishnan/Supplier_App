@@ -45,7 +45,7 @@ class SupplierController extends Controller
     }
 
     public function listItem(){
-        $itemData = Item::with('supplier')->paginate(10);
+        $itemData = Item::with('supplier')->where('stock_unit','>',0)->paginate(10);
         foreach($itemData as $item){
             if (!empty($item->item_images)) {
                 $item->item_images = explode(',', $item->item_images);
@@ -164,18 +164,20 @@ class SupplierController extends Controller
             ->get();
         
             $header = ['Item Name', 'Stock Unit', 'Unit Price', 'Order Qty', 'Item Amount', 'Discount', 'Net Amount'];
-
-            $values = $purchaseOrderdata->map(function ($item) {
-                return [
-                    $item->item_name,
-                    $item->stock_unit,
-                    $item->unit_price,
-                    $item->item_total_no,
-                    $item->item_total,
-                    $item->discount,
-                    $item->net_amount,
-                ];
-            })->toArray();
+            $values = [];
+            if(!$purchaseOrderdata->isEmpty()){
+                $values = $purchaseOrderdata->map(function ($item) {
+                    return [
+                        $item->item_name,
+                        $item->stock_unit,
+                        $item->unit_price,
+                        $item->item_total_no,
+                        $item->item_total,
+                        $item->discount,
+                        $item->net_amount,
+                    ];
+                })->toArray();
+            }
             $exportData = array_merge([$header], $values);
         return Excel::download(new orderExport($exportData), 'purchase_orders.xlsx');
 

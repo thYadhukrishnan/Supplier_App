@@ -14,17 +14,23 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach ($purchaseOrderdata as $orderData)
-                    <tr>
-                        <td style="padding: 12px; border: 1px solid #ddd;">{{$orderData->item_name}}</td>
-                        <td style="padding: 12px; border: 1px solid #ddd;">{{$orderData->stock_unit}}</td>
-                        <td style="padding: 12px; border: 1px solid #ddd;">{{$orderData->unit_price}}</td>
-                        <td style="padding: 12px; border: 1px solid #ddd;">{{$orderData->item_total_no}}</td>
-                        <td style="padding: 12px; border: 1px solid #ddd;">{{$orderData->item_total}}</td>
-                        <td style="padding: 12px; border: 1px solid #ddd;">{{$orderData->discount}} %</td>
-                        <td style="padding: 12px; border: 1px solid #ddd;">{{$orderData->net_amount}}</td>
-                    </tr>
-                @endforeach
+                @if(!empty($purchaseOrderdata))
+                    @foreach ($purchaseOrderdata as $orderData)
+                        <tr>
+                            <td style="padding: 12px; border: 1px solid #ddd;">{{$orderData->item_name}}</td>
+                            <td style="padding: 12px; border: 1px solid #ddd;">{{$orderData->stock_unit}}</td>
+                            <td style="padding: 12px; border: 1px solid #ddd;">{{$orderData->unit_price}}</td>
+                            <td style="padding: 12px; border: 1px solid #ddd;">{{$orderData->item_total_no}}</td>
+                            <td style="padding: 12px; border: 1px solid #ddd;">{{$orderData->item_total}}</td>
+                            <td style="padding: 12px; border: 1px solid #ddd;">{{$orderData->discount}} %</td>
+                            <td style="padding: 12px; border: 1px solid #ddd;">{{$orderData->net_amount}}</td>
+                        </tr>
+                    @endforeach
+                @else 
+                        <tr>
+                            <td colspan="7" style="text-align: center; padding: 12px; border: 1px solid #ddd;">No Data Found</td>
+                        </tr>
+                @endif
             </tbody>
         </table>
     </div>
